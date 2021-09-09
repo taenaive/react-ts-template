@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
-import CascadeSelect from './components/CascadeSelect';
+// import CascadeSelect from './components/cascade/CascadeSelect';
+// import Flatten from './components/flattenSelect/flatten';
+import Hierarchy from './components/reactSelect/Hierarchy';
 
 function App(): JSX.Element {
   const items = [
@@ -17,7 +19,7 @@ function App(): JSX.Element {
           children: [
             {
               value: '121',
-              label: 'Sub Item A',
+              label: 'Sub Item AAAAAAAAAAA AAAAAAAAAAA AAAAAAAAAAAAAAAAAAAAAAAAAA AAAAAAAAAAAAAAAAAAAAA',
             },
             {
               value: '122',
@@ -58,21 +60,16 @@ function App(): JSX.Element {
         Hola
       </header>
       <main>
-        <CascadeSelect
-          customStyles={{
-            dropdown: {
-              style: {
-                margin: '5px 20px 15px 20px',
-              },
-            },
-          }}
+        {/* <CascadeSelect
           items={items}
           onSelect={(value, selectedItems) => {
             console.log(value, selectedItems);
             setDropdownValue(value);
           }}
           value={dropdownValue}
-        />
+        /> */}
+        {/* <Flatten items={items} /> */}
+        <Hierarchy items={items} />
       </main>
     </div>
   );

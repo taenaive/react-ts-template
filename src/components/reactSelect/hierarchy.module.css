@@ -1,0 +1,97 @@
+body {
+  background: #f2f2f2;
+}
+
+.flex-container {
+  /* display: flex; */
+  border: 3px solid #fff;
+    /* padding: 20px; */
+}
+
+.flex-child {
+  /* flex: 1;
+  border: 2px solid yellow; */
+  /* width: 15px; */
+  text-indent: 1em;
+    float: left;
+    padding-top: 8px;
+    /* border: 2px solid red; */
+}  
+
+.flex-child:first-child {
+  margin-right: 20px;
+} 
+
+.selectdiv {
+  position: relative;
+  /*Don't really need this just for demo styling*/
+  max-width: 1000px;
+  width: 100%;
+  /* float: left; */
+  /* min-width: 600px; */
+  /* margin: 50px; */
+  
+}
+.level1{
+  text-indent: 2em;
+  /* display:none; */
+}
+.level2{
+  text-indent: 4em;
+  /* display:none; */
+}
+.level3{
+  text-indent: 6em;
+  /* display:none; */
+}
+.levelc1{
+  display:none;
+}
+.levelc2{
+  display:none;
+}
+.levelc3{
+  display:none;
+}
+.selectdiv:after {
+    content: '\f078';
+    font: normal normal normal 12px/1 FontAwesome;
+    /* float: left; */
+    /* color: #0ebeff; */
+    right: 11px;
+    top: 24px;
+    height: 18px;
+    padding: 5px 0px 0px 8px;
+    border-left: 1px solid #000000;
+    position: absolute;
+    pointer-events: none;
+}
+
+/* IE11 hide native button (thanks Matt!) */
+select::-ms-expand {
+display: none;
+}
+
+.selectdiv select {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  /* Add some styling */
+  
+  display: block;
+  width: 100%;
+  max-width: 1000px;
+  height: 24px;
+  /* float: right; */
+  margin: 5px 0px;
+  padding: 0px 8px;
+  font-size: 14px;
+  line-height: 1.75;
+  color: #333;
+  background-color: #ffffff;
+  background-image: none;
+  /* border: 1px solid #0ebeff; */
+  -ms-word-break: normal;
+  word-break: normal;
+  border-radius: 0.25em;
+}

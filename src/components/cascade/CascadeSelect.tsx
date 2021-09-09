@@ -4,7 +4,7 @@
 import React from 'react';
 
 import styles from './cascade.module.css';
-import { classNames } from './helpers';
+import { classNames } from '../helpers';
 
 interface FieldNames {
   value: string;
@@ -29,24 +29,24 @@ interface NormalizeItem extends Item {
 interface Props {
   customInput?: React.ComponentType<any>;
   customInputProps?: { [key: string]: any }; // Generic Object;
-  customStyles?: {
-    dropdown?: {
-      className?: string;
-      style?: React.CSSProperties;
-    }
-    dropdownMenu?: {
-      className?: string;
-      style?: React.CSSProperties;
-    };
-    dropdownMenuItem?: {
-      className?: string;
-      style?: React.CSSProperties;
-    };
-    dropdownSubitem?: {
-      className?: string;
-      style?: React.CSSProperties;
-    };
-  };
+  // customStyles?: {
+  //   dropdown?: {
+  //     className?: string;
+  //     style?: React.CSSProperties;
+  //   }
+  //   dropdownMenu?: {
+  //     className?: string;
+  //     style?: React.CSSProperties;
+  //   };
+  //   dropdownMenuItem?: {
+  //     className?: string;
+  //     style?: React.CSSProperties;
+  //   };
+  //   dropdownSubitem?: {
+  //     className?: string;
+  //     style?: React.CSSProperties;
+  //   };
+  // };
   disabled?: boolean;
   expandTrigger?: 'click' | 'hover';
   fieldNames?: FieldNames;
@@ -115,9 +115,10 @@ class Cascade extends React.Component<Props> {
     } = this.props;
     if (value) {
       const selectedItems = this.getSelectedItems(items, value);
-      return selectedItems
-        .map((item) => item[fieldNames.label])
-        .join(separatorIcon);
+      // return selectedItems
+      //   .map((item) => item[fieldNames.label])
+      //   .join(separatorIcon);
+      return selectedItems[selectedItems.length - 1][fieldNames.label];
     }
     return undefined;
   }
@@ -127,7 +128,9 @@ class Cascade extends React.Component<Props> {
     document.addEventListener('click', this.onClickOutside);
   }
 
-  handleSelect = (item: Item): void => {
+  handleSelect = ({ e, item } :
+    {e: React.MouseEvent<HTMLLIElement, MouseEvent>, item: Item}): void => {
+    e.stopPropagation();
     const { fieldNames, items, onSelect } = this.props;
     if (!onSelect || item.disabled) return;
     const selectedItems = this.getSelectedItems(items, item[fieldNames.value]);
@@ -165,80 +168,63 @@ class Cascade extends React.Component<Props> {
     }
   }
 
-  renderItems = (items: Item[]): JSX.Element => {
-    const {
-      customStyles: {
-        dropdownMenu: {
-          className: dropdownMenuClassName,
-          style: dropdownMenuStyle,
-        } = { className: undefined, style: undefined },
-        dropdownMenuItem: {
-          className: dropdownMenuItemClassName,
-          style: dropdownMenuItemStyle,
-        } = { className: undefined, style: undefined },
-        dropdownSubitem: {
-          className: dropdownSubitemClassName,
-          style: dropdownSubitemStyle,
-        } = { className: undefined, style: undefined },
-      },
-    } = this.props;
+  renderItems = (items: Item[]): JSX.Element => (
+    <ul
+      className={classNames({
+        [styles.dropdownMenu]: true,
+      //  [dropdownMenuClassName]: Boolean(dropdownMenuClassName),
+      })}
+      // style={dropdownMenuStyle}
+    >
+      {
+        items.map((item, index) => {
+          const {
+            children,
+            disabled,
+            label,
+            value,
+          } = this.normalizeItem(item);
 
-    return (
-      <ul
-        className={classNames({
-          [styles.dropdownMenu]: true,
-          [dropdownMenuClassName]: Boolean(dropdownMenuClassName),
-        })}
-        style={dropdownMenuStyle}
-      >
-        {
-          items.map((item, index) => {
-            const {
-              children,
-              disabled,
-              label,
-              value,
-            } = this.normalizeItem(item);
-
-            if (Array.isArray(children) && children.length >= 1) {
-              return (
-                <li
-                  className={classNames({
-                    [styles.dropdownMenuItem]: true,
-                    [styles.withSubitem]: true,
-                    [dropdownSubitemClassName]: Boolean(dropdownSubitemClassName),
-                    [styles.disabled]: disabled,
-                  })}
-                  key={`${index}-${value}`}
-                  style={dropdownSubitemStyle}
-                >
-                  {label}
-                  {this.renderItems(children)}
-                </li>
-              );
-            }
-
+          if (Array.isArray(children) && children.length >= 1) {
             return (
               <li
                 aria-hidden
                 className={classNames({
                   [styles.dropdownMenuItem]: true,
-                  [dropdownMenuItemClassName]: Boolean(dropdownMenuItemClassName),
+                  [styles.withSubitem]: true,
+                  // [dropdownSubitemClassName]: Boolean(dropdownSubitemClassName),
                   [styles.disabled]: disabled,
                 })}
                 key={`${index}-${value}`}
-                onClick={() => this.handleSelect(item)}
-                style={dropdownMenuItemStyle}
+                // style={dropdownSubitemStyle}
+                onClick={(e) => this.handleSelect({ e, item })}
               >
                 {label}
-
+                {this.renderItems(children)}
               </li>
             );
-          })
-        }
-      </ul>
-    );
-  }
+          }
+
+          return (
+            <li
+              aria-hidden
+              className={classNames({
+                [styles.dropdownMenuItem]: true,
+                // [dropdownMenuItemClassName]: Boolean(dropdownMenuItemClassName),
+                [styles.disabled]: disabled,
+              })}
+              key={`${index}-${value}`}
+              onClick={(e) => this.handleSelect({ e, item })}
+              // style={dropdownMenuItemStyle}
+            >
+              {label}
+
+            </li>
+          );
+        })
+      }
+    </ul>
+  )
 
   renderInput = (): JSX.Element => {
     const {
@@ -261,12 +247,7 @@ class Cascade extends React.Component<Props> {
 
   render(): JSX.Element {
     const {
-      customStyles: {
-        dropdown: {
-          className: dropdownClassName,
-          style: dropdownStyle,
-        },
-      },
+
       expandTrigger,
       items,
     } = this.props;
@@ -276,11 +257,11 @@ class Cascade extends React.Component<Props> {
         aria-hidden
         className={classNames({
           [styles.dropdown]: true,
-          [dropdownClassName]: Boolean(dropdownClassName),
+          // [dropdownClassName]: Boolean(dropdownClassName),
           [styles.dropdownOnHover]: expandTrigger === 'hover',
         })}
         ref={this.dropdownRef}
-        style={dropdownStyle}
+        // style={dropdownStyle}
       >
         {this.renderInput()}
         {this.renderItems(items)}
