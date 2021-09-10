@@ -1,3 +1,4 @@
+/* eslint-disable react/require-default-props */
 /* eslint-disable react/destructuring-assignment */
 /* eslint-disable react/jsx-props-no-spreading */
 import React, { useEffect, useState, Component } from 'react';
@@ -21,7 +22,7 @@ interface Item {
   [key: string]: any;
 }
 
-interface NormalizeItem extends Item {
+export interface NormalizeItem extends Item {
   value: string;
   label: string;
   children?: NormalizeItem[];
@@ -46,13 +47,15 @@ const findDecendents = (flatItems:NormalizeItem[], val:string, toggle:boolean,
   firstStrikeIndex:number) => {
   // out of index protection
   if (firstStrikeIndex >= flatItems.length) return {};
+  // initial return value
   let result: {[key: string]: boolean} = { [val]: toggle };
+  // Ok, this one has chinren let's add all the decendents
   if (flatItems[firstStrikeIndex].haschildren) {
-    // search downward the array for match
+    // search downward the array for a match
     for (let i = firstStrikeIndex + 1; i < flatItems.length; i += 1) {
       // find child of val using parent pointer
       if (flatItems[i].parent === val) {
-        // assign current value to the list so that any child that has parent of this can hide
+        // any child that has this parent gets registered also and repeat til end
         result = { ...result, ...findDecendents(flatItems, flatItems[i].value, toggle, i + 1) };
       }
     }
@@ -63,11 +66,18 @@ const findChildren = (flatItems:NormalizeItem[], val:string, toggle:boolean) => 
   const firstStrikeIndex = flatItems.findIndex((r) => r.value === val);
   return findDecendents(flatItems, val, toggle, firstStrikeIndex);
 };
-// eslint-disable-next-line react/require-default-props
-const Hierarchy = ({ fieldNames, items }:{fieldNames?:FieldNames,
-                                  items: Item[]}): JSX.Element => {
+
+const Hierarchy = ({
+  fieldNames, items, closeMenuOnSelect, onChange, defaultValue, dropdownValue,
+}:{fieldNames?:FieldNames,
+    items: Item[],
+    closeMenuOnSelect:boolean,
+    onChange : (...args: any[])=>void,
+    defaultValue: string,
+    dropdownValue: NormalizeItem}): JSX.Element => {
   const [flatItems, setFlatItems] = useState<NormalizeItem[]>([]);
   const [showList, setShowList] = useState<{[key: string]: boolean; }>({});
+  const [defaultObj, setDefaultObj] = useState<NormalizeItem>();
   const handleExpand = (val:string) => {
     const toggle = !showList[val];
     // check children and hide them all if parent folds
@@ -79,7 +89,6 @@ const Hierarchy = ({ fieldNames, items }:{fieldNames?:FieldNames,
   };
 
   const Option = (props:any) => (
-    // eslint-disable-next-line react/destructuring-assignment
     <div className={classNames({
       [styles['flex-container']]: true,
       [styles['hide-display']]: showList[props.data.parent],
@@ -138,14 +147,25 @@ const Hierarchy = ({ fieldNames, items }:{fieldNames?:FieldNames,
     return accum;
   }, []);
   useEffect(() => {
-    setFlatItems(flattenItems(items, 0, null));
+    const transFormedItems = flattenItems(items, 0, null);
+    setFlatItems(transFormedItems);
+    const initItemIndex:number = transFormedItems.findIndex((r) => r.value === defaultValue);
+    // console.log('initItemIndex', initItemIndex, defaultValue, transFormedItems[initItemIndex]);
+    setDefaultObj(transFormedItems[initItemIndex]);
+    onChange(transFormedItems[initItemIndex]);
   }, []);
   return (
     <div>
       <div>
         Identification Type
       </div>
-      <Select components={{ Option }} options={flatItems} />
+      <Select
+        closeMenuOnSelect={closeMenuOnSelect}
+        onChange={onChange}
+        components={{ Option }}
+        options={flatItems}
+        value={dropdownValue}
+      />
     </div>
   );
 };

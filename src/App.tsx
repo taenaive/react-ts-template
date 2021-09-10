@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 // import CascadeSelect from './components/cascade/CascadeSelect';
 // import Flatten from './components/flattenSelect/flatten';
-import Hierarchy from './components/reactSelect/Hierarchy';
+import Hierarchy, { NormalizeItem } from './components/reactSelect/Hierarchy';
 
 function App(): JSX.Element {
   const items = [
@@ -53,13 +53,19 @@ function App(): JSX.Element {
       ],
     },
   ];
-  const [dropdownValue, setDropdownValue] = useState<string>();
+  const [dropdownValue, setDropdownValue] = useState<NormalizeItem>();
   return (
     <div className="App">
       <header className="App-header">
-        Hola
+        selected:
+        {' '}
+        {dropdownValue && dropdownValue.label}
+
       </header>
       <main>
+        value:
+        {' '}
+        {dropdownValue && dropdownValue.value}
         {/* <CascadeSelect
           items={items}
           onSelect={(value, selectedItems) => {
@@ -69,7 +75,13 @@ function App(): JSX.Element {
           value={dropdownValue}
         /> */}
         {/* <Flatten items={items} /> */}
-        <Hierarchy items={items} />
+        <Hierarchy
+          closeMenuOnSelect={false}
+          onChange={(v:NormalizeItem) => { setDropdownValue(v); }}
+          items={items}
+          defaultValue="1"
+          dropdownValue={dropdownValue}
+        />
       </main>
     </div>
   );
