@@ -149,10 +149,9 @@ const Hierarchy = ({
   useEffect(() => {
     const transFormedItems = flattenItems(items, 0, null);
     setFlatItems(transFormedItems);
-    const initItemIndex:number = transFormedItems.findIndex((r) => r.value === defaultValue);
-    // console.log('initItemIndex', initItemIndex, defaultValue, transFormedItems[initItemIndex]);
-    setDefaultObj(transFormedItems[initItemIndex]);
-    onChange(transFormedItems[initItemIndex]);
+    const initItem:NormalizeItem = transFormedItems.find((r) => r.value === defaultValue);
+    setDefaultObj(initItem);
+    onChange(initItem);
   }, []);
   return (
     <div>

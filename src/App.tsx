@@ -79,7 +79,7 @@ function App(): JSX.Element {
           closeMenuOnSelect={false}
           onChange={(v:NormalizeItem) => { setDropdownValue(v); }}
           items={items}
-          defaultValue="1"
+          defaultValue="12"
           dropdownValue={dropdownValue}
         />
       </main>
