@@ -44,6 +44,9 @@ body {
   text-indent: 6em;
   /* display:none; */
 }
+.hide-display{
+  display:none;
+}
 .levelc1{
   display:none;
 }
